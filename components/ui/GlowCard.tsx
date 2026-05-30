@@ -33,12 +33,13 @@ export default function GlowCard({
           damping: 20,
         }
       }}
+      style={{ borderColor: 'rgba(39, 39, 42, 0.8)' }} // zinc-800/80 as rgba — gives FM a known start value
       className={`
         relative overflow-hidden rounded-2xl
         bg-zinc-950/65 backdrop-blur-xl
-        border border-zinc-800/80
+        border border-transparent
         shadow-2xl shadow-black/40
-        transition-all duration-300 ease-out
+        transition-shadow duration-300 ease-out
         ${className}
       `}
     >
