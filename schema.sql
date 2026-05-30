@@ -9,7 +9,7 @@
 -- ==========================================
 CREATE TABLE IF NOT EXISTS public.courses (
     id          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
-    title       TEXT        NOT NULL,
+    title       TEXT        NOT NULL UNIQUE,
     progress    INTEGER     NOT NULL CHECK (progress >= 0 AND progress <= 100),
     icon_name   TEXT        NOT NULL,
     created_at  TIMESTAMPTZ DEFAULT now()
@@ -21,12 +21,14 @@ DROP POLICY IF EXISTS "Allow public read access" ON public.courses;
 CREATE POLICY "Allow public read access"
 ON public.courses FOR SELECT USING (true);
 
+-- Wipe and re-insert so duplicates from previous runs are removed
+TRUNCATE TABLE public.courses RESTART IDENTITY;
+
 INSERT INTO public.courses (title, progress, icon_name, created_at) VALUES
     ('Advanced React Patterns',       75, 'Atom',   now() - interval '4 days'),
     ('Machine Learning Fundamentals', 42, 'Brain',  now() - interval '3 days'),
     ('System Design Masterclass',     90, 'Server', now() - interval '2 days'),
-    ('TypeScript Deep Dive',          60, 'Code',   now() - interval '1 day')
-ON CONFLICT DO NOTHING;
+    ('TypeScript Deep Dive',          60, 'Code',   now() - interval '1 day');
 
 
 -- ==========================================

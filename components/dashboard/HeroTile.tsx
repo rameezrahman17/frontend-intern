@@ -90,7 +90,7 @@ export default function HeroTile({
             variants={subtitleVariants}
             className="text-sm text-zinc-400 mt-3 font-medium max-w-[280px] leading-relaxed"
           >
-            You are outperforming 86% of students in your cohort this week. Keep the momentum flying.
+            You are in the top 5% of active learners this week. Keep the momentum flying.
           </motion.p>
         </div>
 
