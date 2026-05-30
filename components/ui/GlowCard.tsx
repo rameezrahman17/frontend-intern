@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion, Variants } from 'framer-motion';
 
 interface GlowCardProps {
@@ -15,41 +14,25 @@ export default function GlowCard({
   children,
   className = '',
   as = 'article',
-  glowColor = 'rgba(6, 182, 212, 0.15)', // default cyan glow
+  glowColor = 'rgba(6, 182, 212, 0.15)',
   variants,
 }: GlowCardProps) {
-  const Component = motion[as] as any;
+  const Tag = motion[as] as any;
 
   return (
-    <Component
+    <Tag
       variants={variants}
+      style={{ borderColor: 'rgba(39, 39, 42, 0.8)' }}
       whileHover={{
         scale: 1.018,
-        boxShadow: `0 0 35px ${glowColor}, inset 0 0 12px rgba(255, 255, 255, 0.05)`,
         borderColor: 'rgba(255, 255, 255, 0.25)',
-        transition: {
-          type: 'spring',
-          stiffness: 300,
-          damping: 20,
-        }
+        boxShadow: `0 0 35px ${glowColor}, inset 0 0 12px rgba(255,255,255,0.05)`,
+        transition: { type: 'spring', stiffness: 300, damping: 20 },
       }}
-      style={{ borderColor: 'rgba(39, 39, 42, 0.8)' }} // zinc-800/80 as rgba — gives FM a known start value
-      className={`
-        relative overflow-hidden rounded-2xl
-        bg-zinc-950/65 backdrop-blur-xl
-        border border-transparent
-        shadow-2xl shadow-black/40
-        transition-shadow duration-300 ease-out
-        ${className}
-      `}
+      className={`relative overflow-hidden rounded-2xl bg-zinc-950/65 backdrop-blur-xl border border-transparent shadow-2xl shadow-black/40 transition-shadow duration-300 ${className}`}
     >
-      {/* Background Mesh Gradient Glow (Subtle visual texture) */}
-      <div className="absolute inset-0 -z-10 bg-radial-[circle_at_50%_120%] from-zinc-800/10 via-transparent to-transparent pointer-events-none opacity-50" />
-      
-      {/* Card Content */}
-      <div className="relative z-10 w-full h-full">
-        {children}
-      </div>
-    </Component>
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(39,39,42,0.1),transparent)] pointer-events-none opacity-50" />
+      <div className="relative z-10 w-full h-full">{children}</div>
+    </Tag>
   );
 }

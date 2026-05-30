@@ -20,7 +20,7 @@ export interface Profile {
 
 export interface ActivityLog {
   id: string;
-  activity_date: string; // YYYY-MM-DD
+  activity_date: string;
   activity_count: number;
   created_at?: string;
 }

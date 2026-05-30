@@ -1,19 +1,12 @@
-import React from 'react';
-import * as LucideIcons from 'lucide-react';
+import * as Icons from 'lucide-react';
 
-interface DynamicIconProps {
+interface Props {
   name: string;
-  className?: string;
   size?: number;
+  className?: string;
 }
 
-export default function DynamicIcon({ name, className = '', size = 24 }: DynamicIconProps) {
-  // Map database string to standard Lucide icons
-  // Standardize naming (e.g. Brain, Atom, Server, Code)
-  const iconName = name.trim();
-  
-  // Resolve component dynamically
-  const IconComponent = (LucideIcons as any)[iconName] || LucideIcons.BookOpen;
-
-  return <IconComponent className={className} size={size} />;
+export default function DynamicIcon({ name, size = 24, className = '' }: Props) {
+  const Icon = (Icons as Record<string, any>)[name.trim()] ?? Icons.BookOpen;
+  return <Icon size={size} className={className} />;
 }
