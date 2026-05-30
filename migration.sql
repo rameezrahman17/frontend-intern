@@ -28,10 +28,10 @@ ON public.courses FOR SELECT USING (true);
 TRUNCATE TABLE public.courses RESTART IDENTITY;
 
 INSERT INTO public.courses (title, progress, icon_name, created_at) VALUES
-    ('Advanced React Patterns',       75, 'Atom',   now() - interval '4 days'),
-    ('Machine Learning Fundamentals', 42, 'Brain',  now() - interval '3 days'),
-    ('System Design Masterclass',     90, 'Server', now() - interval '2 days'),
-    ('TypeScript Deep Dive',          60, 'Code',   now() - interval '1 day');
+    ('Advanced React Patterns',       75, 'Atom',        now() - interval '4 days'),
+    ('UI/UX Design Fundamentals',     35, 'Palette',     now() - interval '3 days'),
+    ('System Design Masterclass',     90, 'Server',      now() - interval '2 days'),
+    ('Python for Data Science',       55, 'ChartLine',   now() - interval '1 day');
 
 -- ==========================================
 -- 2. PROFILES (create if missing, add columns if missing)

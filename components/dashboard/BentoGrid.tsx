@@ -47,8 +47,8 @@ export default function BentoGrid({ courses, profile, activityLogs }: BentoGridP
         />
       </motion.div>
 
-      {courses.map((course) => (
-        <CourseCard key={course.id} course={course} variants={tile} />
+      {courses.map((course, i) => (
+        <CourseCard key={course.id} course={course} variants={tile} index={i} />
       ))}
 
       <motion.div variants={tile} className="col-span-1 md:col-span-2 lg:col-span-3">

@@ -2,10 +2,10 @@ import { createClient } from './server';
 import { Course, Profile, ActivityLog, LeaderboardEntry } from '../types';
 
 const fallbackCourses: Course[] = [
-  { id: '1', title: 'Advanced React Patterns',       progress: 75, icon_name: 'Atom'   },
-  { id: '2', title: 'Machine Learning Fundamentals', progress: 42, icon_name: 'Brain'  },
-  { id: '3', title: 'System Design Masterclass',     progress: 90, icon_name: 'Server' },
-  { id: '4', title: 'TypeScript Deep Dive',          progress: 60, icon_name: 'Code'   },
+  { id: '1', title: 'Advanced React Patterns',   progress: 75, icon_name: 'Atom'      },
+  { id: '2', title: 'UI/UX Design Fundamentals', progress: 35, icon_name: 'Palette'   },
+  { id: '3', title: 'System Design Masterclass', progress: 90, icon_name: 'Server'    },
+  { id: '4', title: 'Python for Data Science',   progress: 55, icon_name: 'ChartLine' },
 ];
 
 const fallbackProfile: Profile = {
