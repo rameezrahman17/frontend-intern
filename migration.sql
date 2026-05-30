@@ -1,47 +1,64 @@
 -- ============================================================
--- NexLearn Migration Script
--- Run this in your Supabase SQL Editor to update the existing
--- database to the new schema with all students and XP data.
+-- NexLearn Migration — safe to run on BOTH fresh and existing
+-- Supabase projects. Use this if schema.sql has already been
+-- run before and you just need to update data / add columns.
 -- ============================================================
 
+-- Re-run the full schema (all statements use IF NOT EXISTS / ON CONFLICT)
+-- so it is idempotent — safe to run multiple times.
 
 -- ==========================================
--- STEP 1: Add new columns to profiles table
--- (safe — uses IF NOT EXISTS equivalent via DO block)
+-- 1. COURSES (ensure table + data exist)
 -- ==========================================
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public'
-      AND table_name   = 'profiles'
-      AND column_name  = 'email'
-  ) THEN
-    ALTER TABLE public.profiles ADD COLUMN email TEXT;
-  END IF;
+CREATE TABLE IF NOT EXISTS public.courses (
+    id          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+    title       TEXT        NOT NULL,
+    progress    INTEGER     NOT NULL CHECK (progress >= 0 AND progress <= 100),
+    icon_name   TEXT        NOT NULL,
+    created_at  TIMESTAMPTZ DEFAULT now()
+);
 
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public'
-      AND table_name   = 'profiles'
-      AND column_name  = 'total_xp'
-  ) THEN
-    ALTER TABLE public.profiles ADD COLUMN total_xp INTEGER NOT NULL DEFAULT 0;
-  END IF;
-END $$;
+ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read access" ON public.courses;
+CREATE POLICY "Allow public read access"
+ON public.courses FOR SELECT USING (true);
+
+INSERT INTO public.courses (title, progress, icon_name, created_at) VALUES
+    ('Advanced React Patterns',       75, 'Atom',   now() - interval '4 days'),
+    ('Machine Learning Fundamentals', 42, 'Brain',  now() - interval '3 days'),
+    ('System Design Masterclass',     90, 'Server', now() - interval '2 days'),
+    ('TypeScript Deep Dive',          60, 'Code',   now() - interval '1 day')
+ON CONFLICT DO NOTHING;
 
 
 -- ==========================================
--- STEP 2: Remove old student row(s) and
--- insert the correct set of 10 students
+-- 2. PROFILES (create if missing, add columns if missing)
 -- ==========================================
+CREATE TABLE IF NOT EXISTS public.profiles (
+    id                  UUID    DEFAULT gen_random_uuid() PRIMARY KEY,
+    student_name        TEXT    NOT NULL,
+    streak_days         INTEGER NOT NULL DEFAULT 0,
+    scholar_level       INTEGER NOT NULL DEFAULT 1,
+    daily_goal_progress INTEGER NOT NULL DEFAULT 0 CHECK (daily_goal_progress >= 0 AND daily_goal_progress <= 100),
+    next_milestone_xp   INTEGER NOT NULL DEFAULT 1000,
+    created_at          TIMESTAMPTZ DEFAULT now()
+);
 
--- Wipe existing profile rows so we start clean
+-- Add new columns only if they don't already exist
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email    TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS total_xp INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read access to profiles" ON public.profiles;
+CREATE POLICY "Allow public read access to profiles"
+ON public.profiles FOR SELECT USING (true);
+
+-- Replace all rows with the correct 10-student set
 TRUNCATE TABLE public.profiles RESTART IDENTITY;
 
--- Insert all 10 students
-INSERT INTO public.profiles (student_name, email, streak_days, scholar_level, daily_goal_progress, next_milestone_xp, total_xp)
-VALUES
+INSERT INTO public.profiles (student_name, email, streak_days, scholar_level, daily_goal_progress, next_milestone_xp, total_xp) VALUES
     ('John Doe',       'john.doe@learning.io',       15, 5, 80,  1200, 4850),
     ('Aisha Patel',    'aisha.patel@learning.io',     22, 7, 95,  800,  7320),
     ('Marcus Chen',    'marcus.chen@learning.io',     10, 4, 60,  1500, 3210),
@@ -55,20 +72,21 @@ VALUES
 
 
 -- ==========================================
--- STEP 3: Ensure courses table has data
+-- 3. ACTIVITY LOGS (create if missing + seed)
 -- ==========================================
-INSERT INTO public.courses (title, progress, icon_name, created_at)
-VALUES
-    ('Advanced React Patterns',       75, 'Atom',   now() - interval '4 days'),
-    ('Machine Learning Fundamentals', 42, 'Brain',  now() - interval '3 days'),
-    ('System Design Masterclass',     90, 'Server', now() - interval '2 days'),
-    ('TypeScript Deep Dive',          60, 'Code',   now() - interval '1 day')
-ON CONFLICT DO NOTHING;
+CREATE TABLE IF NOT EXISTS public.activity_logs (
+    id             UUID  DEFAULT gen_random_uuid() PRIMARY KEY,
+    activity_date  DATE  NOT NULL UNIQUE,
+    activity_count INTEGER NOT NULL DEFAULT 0,
+    created_at     TIMESTAMPTZ DEFAULT now()
+);
 
+ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 
--- ==========================================
--- STEP 4: Ensure activity_logs has data
--- ==========================================
+DROP POLICY IF EXISTS "Allow public read access to activity logs" ON public.activity_logs;
+CREATE POLICY "Allow public read access to activity logs"
+ON public.activity_logs FOR SELECT USING (true);
+
 INSERT INTO public.activity_logs (activity_date, activity_count)
 SELECT
     (current_date - (val || ' days')::interval)::date,
@@ -78,8 +96,8 @@ ON CONFLICT (activity_date) DO NOTHING;
 
 
 -- ==========================================
--- STEP 5: Verify — should show 10 students
+-- VERIFY — should show 10 students by XP
 -- ==========================================
-SELECT id, student_name, total_xp, streak_days, scholar_level
+SELECT student_name, total_xp, streak_days, scholar_level
 FROM public.profiles
 ORDER BY total_xp DESC;
