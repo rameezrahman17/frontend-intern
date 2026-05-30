@@ -54,7 +54,8 @@ export async function getCourses(): Promise<Course[]> {
   const { data, error } = await db
     .from('courses')
     .select('*')
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: true })
+    .limit(4);
 
   if (error) {
     console.error('courses fetch failed:', error.message);

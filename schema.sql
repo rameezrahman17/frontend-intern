@@ -30,7 +30,6 @@ INSERT INTO public.courses (title, progress, icon_name, created_at) VALUES
     ('System Design Masterclass',     90, 'Server', now() - interval '2 days'),
     ('TypeScript Deep Dive',          60, 'Code',   now() - interval '1 day');
 
-
 -- ==========================================
 -- 2. PROFILES TABLE
 -- ==========================================
