@@ -1,29 +1,33 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Quicksand, Fredoka, Dancing_Script } from 'next/font/google';
 import './globals.css';
 
-const sans = Geist({
-  variable: '--font-geist-sans',
+const quicksand = Quicksand({
+  variable: '--font-quicksand',
   subsets: ['latin'],
   display: 'swap',
-  fallback: ['system-ui', 'sans-serif'],
 });
 
-const mono = Geist_Mono({
-  variable: '--font-geist-mono',
+const fredoka = Fredoka({
+  variable: '--font-fredoka',
   subsets: ['latin'],
   display: 'swap',
-  fallback: ['ui-monospace', 'monospace'],
+});
+
+const dancingScript = Dancing_Script({
+  variable: '--font-dancing-script',
+  subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'NexLearn | Student Dashboard',
-  description: 'A futuristic student learning dashboard powered by Next.js, Supabase, and Framer Motion.',
+  title: 'For Sanskrtiti 💗',
+  description: 'A special birthday surprise, just for you.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable} h-full antialiased`}>
+    <html lang="en" className={`${quicksand.variable} ${fredoka.variable} ${dancingScript.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

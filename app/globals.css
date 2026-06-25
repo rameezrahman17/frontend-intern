@@ -1,58 +1,187 @@
 @import "tailwindcss";
 
-:root {
-  --background: #09090b;      /* Near black background */
-  --foreground: #fafafa;      /* Light gray text */
-  --font-sans: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-  --font-mono: var(--font-geist-mono), monospace;
+@theme {
+  --color-bg-base: #FCE2EA;
+  --color-accent: #F36C8E;
+  --color-accent-hover: #e0567a;
+  --color-accent-light: #FBD3DE;
+  --color-heading: #7A1B3A;
+  --color-script-accent: #E15B82;
+  --color-card-surf: #FFF5F8;
+  
+  --font-sans: var(--font-quicksand), sans-serif;
+  --font-heading: var(--font-fredoka), sans-serif;
+  --font-script: var(--font-dancing-script), cursive;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
+:root {
+  --bg-base: #FCE2EA;
+  --accent: #F36C8E;
+  --accent-light: #FBD3DE;
+  --heading: #7A1B3A;
+  --script: #E15B82;
+  --card: #FFF5F8;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background-color: var(--bg-base);
+  color: var(--heading);
   font-family: var(--font-sans);
   overflow-x: hidden;
 }
 
-/* Glassmorphism utility helpers */
-.glass-panel {
-  background: rgba(24, 24, 27, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-/* Hide default scrollbars for contribution charts but preserve scroll ability */
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-none {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-/* Webkit custom scrollbars for main view */
+/* Custom scrollbars in pink theme */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: var(--bg-base);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #18181b;
+  background: var(--accent-light);
   border-radius: 9999px;
+  border: 2px solid var(--bg-base);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #27272a;
+  background: var(--accent);
+}
+
+/* Floating heart background animations */
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.35;
+  }
+  90% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.floating-heart {
+  position: fixed;
+  bottom: -50px;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatUp 15s linear infinite;
+  opacity: 0;
+}
+
+/* Heart bunting decorations */
+.bunting-rope {
+  stroke: #7A1B3A;
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  fill: none;
+}
+
+/* ============================
+   Flippable Card System
+   ============================ */
+.flip-card {
+  perspective: 1200px;
+  cursor: pointer;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Shimmer effect on cards */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.card-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Sparkle text effect for heading */
+@keyframes sparkleGlow {
+  0%, 100% { text-shadow: 0 0 8px rgba(243, 108, 142, 0.3), 0 0 20px rgba(243, 108, 142, 0.1); }
+  50% { text-shadow: 0 0 16px rgba(243, 108, 142, 0.5), 0 0 40px rgba(243, 108, 142, 0.2); }
+}
+
+.sparkle-text {
+  animation: sparkleGlow 2.5s ease-in-out infinite;
+}
+
+/* Gentle float for idle cards */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.gentle-float {
+  animation: gentleFloat 4s ease-in-out infinite;
+}
+
+/* Tap hint pulse */
+@keyframes tapPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.tap-hint {
+  animation: tapPulse 2s ease-in-out infinite;
+}
+
+/* Polaroid image effect */
+.polaroid-frame {
+  background: white;
+  padding: 10px 10px 24px 10px;
+  box-shadow: 0 8px 16px rgba(122, 27, 58, 0.12);
+  border-radius: 4px;
+  border: 1px solid rgba(243, 108, 142, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.polaroid-frame:hover {
+  transform: scale(1.03) rotate(0deg) !important;
+  z-index: 10;
 }
