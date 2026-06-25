@@ -2,6 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { birthdayConfig } from '../../lib/birthday-config';
+import { GiftId } from '../../lib/birthday-config';
+
+interface BirthdayCardProps {
+  giftChoice?: GiftId;
+}
 
 const floatEmojis = ['🌸', '✨', '🎀', '💫', '🌷', '⭐', '💐', '🎊', '🎈', '🥳'];
 
@@ -14,7 +19,7 @@ const sparklePositions = [
   { bottom: '18%', right: '7%' },
 ];
 
-export default function BirthdayCard() {
+export default function BirthdayCard({ giftChoice }: BirthdayCardProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8 z-10 relative overflow-hidden">
 
@@ -111,15 +116,6 @@ export default function BirthdayCard() {
         className="mt-10 font-script text-2xl text-script-accent text-center"
       >
         Wishing you the best day ever, {birthdayConfig.recipientName}! 🎉
-      </motion.p>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6 }}
-        className="mt-2 text-sm text-heading/45 font-sans text-center"
-      >
-        With all the love in the world 💗
       </motion.p>
     </div>
   );

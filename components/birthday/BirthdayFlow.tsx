@@ -10,6 +10,7 @@ import Step1Collage from './Step1Collage';
 import Step2GiftTeaser from './Step2GiftTeaser';
 import Step3GiftPicker from './Step3GiftPicker';
 import Step6Confirmation from './Step6Confirmation';
+import BirthdayCard from './BirthdayCard';
 import { birthdayConfig, GiftId } from '../../lib/birthday-config';
 
 export default function BirthdayFlow() {
@@ -65,8 +66,8 @@ export default function BirthdayFlow() {
         );
       case 4:
         return (
-          <Step6Confirmation
-            key="step6"
+          <BirthdayCard
+            key="card"
             giftChoice={giftChoice || 'flower_bouquet'}
           />
         );
