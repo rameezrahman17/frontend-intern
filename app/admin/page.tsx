@@ -1,23 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Trash, LogOut, RefreshCw, Calendar, Clock, Gift, User, Smartphone } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { LogOut, Gift, User, RefreshCw } from 'lucide-react';
 
 interface Submission {
   submission_id: string;
   recipient_name: string;
-  sender_message: string | null;
-  wants_gift: boolean;
   gift_choice: string;
-  treat_date: string;
-  treat_time: string;
   submitted_at: string;
-  user_agent: string | null;
 }
 
+const giftMap: Record<string, { emoji: string; label: string }> = {
+  flower_bouquet:   { emoji: '💐', label: 'Flower Bouquet' },
+  movie:            { emoji: '🤔', label: 'Sochne De' },
+  chocolate_hamper: { emoji: '🍫', label: 'Chocolate Hamper' },
+  snacks_hamper:    { emoji: '🍿', label: 'Snacks Hamper' },
+  teri_marzi:       { emoji: '🌟', label: 'Teri Marzi' },
+};
+
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authed, setAuthed] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,152 +28,152 @@ export default function AdminPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('birthday_admin_token');
-    if (token) {
-      setIsAuthenticated(true);
-      fetchSubmissions(token);
-    }
+    if (token) { setAuthed(true); load(token); }
   }, []);
 
-  const fetchSubmissions = async (token: string) => {
+  const load = async (token: string) => {
     setFetching(true);
     try {
       const res = await fetch('/api/admin/submissions', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (res.ok) {
-        setSubmissions(data.submissions || []);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setFetching(false);
-    }
+      if (res.ok) setSubmissions(data.submissions || []);
+    } catch (e) { console.error(e); }
+    finally { setFetching(false); }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const login = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
+    setLoading(true); setError('');
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
       });
-
       const data = await res.json();
-
       if (res.ok && data.token) {
         localStorage.setItem('birthday_admin_token', data.token);
-        setIsAuthenticated(true);
-        fetchSubmissions(data.token);
+        setAuthed(true);
+        load(data.token);
       } else {
-        setError(data.message || 'Login failed');
+        setError(data.message || 'Wrong password');
       }
-    } catch (e) {
-      setError('An error occurred');
-    } finally {
-      setLoading(false);
-    }
+    } catch { setError('Something went wrong'); }
+    finally { setLoading(false); }
   };
 
-  const handleLogout = () => {
+  const logout = () => {
     localStorage.removeItem('birthday_admin_token');
-    setIsAuthenticated(false);
+    setAuthed(false);
     setSubmissions([]);
   };
 
-  const getGiftEmoji = (gift: string) => {
-    const map: Record<string, string> = { flower_bouquet: '💐', drive: '🚗', movie: '🎬', chocolate_hamper: '🍫', snacks_hamper: '🍿' };
-    return map[gift] || '🎁';
+  const fmt = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+      });
+    } catch { return iso; }
   };
 
-  const getGiftLabel = (gift: string) => {
-    const map: Record<string, string> = { flower_bouquet: 'Flower Bouquet', drive: 'A Drive', movie: 'A Movie', chocolate_hamper: 'Chocolate Hamper', snacks_hamper: 'Snacks Hamper' };
-    return map[gift] || gift;
-  };
-
-  const formatFriendlyDate = (dateStr: string) => dateStr;
-  const formatFriendlyTime = (timeStr: string) => timeStr;
-  const parseDevice = (ua: string | null) => ua || 'Unknown Device';
-
-  if (!isAuthenticated) {
+  if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-card">
-        <form onSubmit={handleLogin} className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full">
-          <h1 className="text-2xl font-bold text-heading mb-6">Admin Login</h1>
-          {error && <p className="text-red-500 mb-4">{error}</p>}
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full border rounded p-2 mb-4" placeholder="Password" required />
-          <button type="submit" disabled={loading} className="w-full bg-accent text-white rounded p-2 font-semibold hover:bg-accent-hover transition-colors">{loading ? 'Loading...' : 'Login'}</button>
+      <div className="min-h-screen flex items-center justify-center bg-[#FCE2EA]">
+        <form onSubmit={login} className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm">
+          <h1 className="text-2xl font-bold text-[#7A1B3A] mb-2 text-center">Admin 🔐</h1>
+          <p className="text-sm text-[#7A1B3A]/60 text-center mb-6">Birthday submissions viewer</p>
+          {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+            className="w-full border border-[#FBD3DE] rounded-xl px-4 py-3 mb-4 text-[#7A1B3A] focus:outline-none focus:border-[#F36C8E] transition-colors"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#F36C8E] hover:bg-[#e0567a] text-white rounded-xl py-3 font-semibold transition-colors disabled:opacity-60"
+          >
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
         </form>
       </div>
     );
   }
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('birthday_admin_token') || '' : '';
+
   return (
-    <div className="min-h-screen bg-card p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-heading">Submissions</h1>
-          <button onClick={handleLogout} className="flex items-center gap-2 text-red-500 hover:text-red-600 font-semibold"><LogOut size={18} /> Logout</button>
+    <div className="min-h-screen bg-[#FCE2EA] p-4 sm:p-8">
+      <div className="max-w-3xl mx-auto">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-[#7A1B3A]">Birthday Submissions 🎂</h1>
+            <p className="text-sm text-[#7A1B3A]/60 mt-0.5">{submissions.length} response{submissions.length !== 1 ? 's' : ''}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => load(token)}
+              disabled={fetching}
+              className="p-2.5 rounded-xl bg-white border border-[#FBD3DE] text-[#F36C8E] hover:bg-[#FBD3DE]/30 transition-colors disabled:opacity-50"
+              title="Refresh"
+            >
+              <RefreshCw size={16} className={fetching ? 'animate-spin' : ''} />
+            </button>
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#FBD3DE] text-[#7A1B3A]/70 hover:text-red-500 hover:border-red-200 transition-colors text-sm font-medium"
+            >
+              <LogOut size={15} /> Logout
+            </button>
+          </div>
         </div>
-        
-        {fetching ? <p>Loading submissions...</p> : (
-          <div className="bg-white rounded-2xl shadow overflow-hidden">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 text-gray-600">
-                <tr>
-                  <th className="px-6 py-4">Recipient</th>
-                  <th className="px-6 py-4">Gift</th>
-                  <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Time</th>
-                  <th className="px-6 py-4">Device</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {submissions.map((sub) => (
-                  <tr key={sub.submission_id}>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 font-medium">
-                        <User className="w-4 h-4 text-accent/70" />
-                        {sub.recipient_name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{getGiftEmoji(sub.gift_choice)}</span>
-                        <span className="font-medium text-heading/85">{getGiftLabel(sub.gift_choice)}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 font-semibold">
-                        <Calendar className="w-4 h-4 text-accent/70" />
-                        {formatFriendlyDate(sub.treat_date)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2 font-semibold">
-                        <Clock className="w-4 h-4 text-accent/70" />
-                        {formatFriendlyTime(sub.treat_time)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-xs text-heading/60 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <Smartphone className="w-3.5 h-3.5 text-heading/40" />
-                        {parseDevice(sub.user_agent)}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {submissions.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">No submissions yet.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+
+        {/* Submissions */}
+        {fetching ? (
+          <div className="text-center py-16 text-[#7A1B3A]/50">Loading...</div>
+        ) : submissions.length === 0 ? (
+          <div className="text-center py-16 text-[#7A1B3A]/50 bg-white rounded-3xl">
+            <p className="text-4xl mb-3">🎀</p>
+            <p className="font-medium">No submissions yet</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {submissions.map((sub, i) => {
+              const gift = giftMap[sub.gift_choice] ?? { emoji: '🎁', label: sub.gift_choice };
+              return (
+                <div key={sub.submission_id} className="bg-white rounded-2xl p-5 shadow-sm border border-[#FBD3DE]/60 flex items-center gap-4">
+                  {/* Index */}
+                  <div className="w-8 h-8 rounded-full bg-[#FBD3DE]/60 flex items-center justify-center text-sm font-bold text-[#F36C8E] shrink-0">
+                    {i + 1}
+                  </div>
+
+                  {/* Name */}
+                  <div className="flex items-center gap-2 min-w-[120px]">
+                    <User size={14} className="text-[#F36C8E] shrink-0" />
+                    <span className="font-semibold text-[#7A1B3A] text-sm">{sub.recipient_name}</span>
+                  </div>
+
+                  {/* Gift */}
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-2xl">{gift.emoji}</span>
+                    <span className="font-bold text-[#7A1B3A]">{gift.label}</span>
+                  </div>
+
+                  {/* Time */}
+                  <div className="text-xs text-[#7A1B3A]/50 text-right shrink-0">
+                    {fmt(sub.submitted_at)}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -18,16 +18,14 @@ export default function Step6Confirmation({ giftChoice }: Step6ConfirmationProps
 
   if (showCard) {
     return (
-      <AnimatePresence>
-        <motion.div
-          key="card"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }}
-        >
-          <BirthdayCard />
-        </motion.div>
-      </AnimatePresence>
+      <motion.div
+        key="card"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, type: 'spring', bounce: 0.4 }}
+      >
+        <BirthdayCard />
+      </motion.div>
     );
   }
 
@@ -62,7 +60,7 @@ export default function Step6Confirmation({ giftChoice }: Step6ConfirmationProps
         <motion.div
           className="mb-6"
           animate={{ y: [0, -10, 0] }}
-          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' as const }}
         >
           <KawaiiCharacter mood="celebrating" />
         </motion.div>
@@ -90,7 +88,7 @@ export default function Step6Confirmation({ giftChoice }: Step6ConfirmationProps
           initial={{ opacity: 0, y: 30, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ delay: 1, type: 'spring', bounce: 0.5 }}
-          className="w-full bg-gradient-to-br from-accent-light/20 to-accent-light/10 border border-accent-light/40 rounded-2xl p-5 text-left flex items-center gap-4 shadow-inner mb-8"
+          className="w-full bg-linear-to-br from-accent-light/20 to-accent-light/10 border border-accent-light/40 rounded-2xl p-5 text-left flex items-center gap-4 shadow-inner mb-8"
         >
           <motion.span
             animate={{ rotate: [0, -10, 10, 0], scale: [1, 1.2, 1] }}
@@ -102,11 +100,11 @@ export default function Step6Confirmation({ giftChoice }: Step6ConfirmationProps
           <div>
             <span className="text-xs text-heading/50 block font-heading tracking-wider mb-1">YOUR CHOICE</span>
             <strong className="font-heading font-bold text-xl text-heading">{gift?.label || giftChoice}</strong>
-            <p className="text-sm text-heading/60 font-sans mt-1">{gift?.description}</p>
+            {gift?.description && <p className="text-sm text-heading/60 font-sans mt-1">{gift.description}</p>}
           </div>
         </motion.div>
 
-        {/* Open birthday card button */}
+        {/* Open birthday card */}
         <motion.button
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
