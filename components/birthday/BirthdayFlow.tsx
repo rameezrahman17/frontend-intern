@@ -23,31 +23,26 @@ export default function BirthdayFlow() {
     if (!giftChoice) return;
 
     setIsSubmitting(true);
-    try {
-      const response = await fetch('/api/submissions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          recipient_name: birthdayConfig.recipientName,
-          wants_gift: true,
-          gift_choice: giftChoice,
-          treat_date: '2026-01-01', // Dummy value since date picker removed
-          treat_time: '12:00', // Dummy value since time picker removed
-        }),
-      });
 
-      if (response.ok) {
-        nextStep();
-      } else {
-        console.error('Submission failed');
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
+    // Advance to confirmation screen immediately — don't block on API
+    // Fire-and-forget the submission in the background
+    fetch('/api/submissions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        recipient_name: birthdayConfig.recipientName,
+        wants_gift: true,
+        gift_choice: giftChoice,
+        treat_date: '2026-01-01',
+        treat_time: '12:00',
+      }),
+    }).catch((e) => console.error('Submission error:', e));
+
+    // Small delay so the spinner shows, then move on
+    setTimeout(() => {
       setIsSubmitting(false);
-    }
+      nextStep();
+    }, 600);
   };
 
   const renderStep = () => {
