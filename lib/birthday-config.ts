@@ -13,16 +13,10 @@ export const birthdayConfig = {
       description: 'A stunning bouquet of your favourites',
     },
     {
-      id: 'drive' as const,
-      emoji: '🚗',
-      label: 'A Drive',
-      description: 'A scenic drive to wherever you want',
-    },
-    {
       id: 'movie' as const,
-      emoji: '🎬',
-      label: 'A Movie',
-      description: 'Your pick — any movie, any time',
+      emoji: '🤔',
+      label: 'Sochne De',
+      description: '',
     },
     {
       id: 'chocolate_hamper' as const,
@@ -35,6 +29,12 @@ export const birthdayConfig = {
       emoji: '🍿',
       label: 'Snacks Hamper',
       description: 'All the snacks you could ever want',
+    },
+    {
+      id: 'teri_marzi' as const,
+      emoji: '🌟',
+      label: 'Teri Marzi',
+      description: '',
     },
   ],
 

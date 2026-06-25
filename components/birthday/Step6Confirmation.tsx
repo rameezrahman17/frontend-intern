@@ -73,7 +73,7 @@ export default function Step6Confirmation({ giftChoice }: Step6ConfirmationProps
           transition={{ delay: 0.5, type: 'spring', bounce: 0.6 }}
           className="font-heading font-bold text-4xl sm:text-5xl text-heading mb-3 leading-tight sparkle-text"
         >
-          Yay! Can't wait! 🎉
+          {giftChoice === 'movie' ? 'Jldi Batana! 😄' : "Yay! Can't wait! 🎉"}
         </motion.h2>
 
         <motion.p
