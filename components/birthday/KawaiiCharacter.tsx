@@ -83,13 +83,13 @@ export default function KawaiiCharacter({ mood }: KawaiiCharacterProps) {
         return {
           y: [0, 2, 0],
           rotate: [0, -2, 0],
-          transition: { repeat: Infinity, duration: 4 }
+          transition: { repeat: Infinity, duration: 4 } as const
         };
       case 'happy':
       default:
         return {
           y: [0, -10, 0],
-          transition: { repeat: Infinity, duration: 2, ease: "easeInOut" }
+          transition: { repeat: Infinity, duration: 2, ease: 'easeInOut' as const }
         };
     }
   };

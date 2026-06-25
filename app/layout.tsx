@@ -21,8 +21,8 @@ const dancingScript = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  title: 'For Sanskrtiti 💗',
-  description: 'A special birthday surprise, just for you.',
+  title: 'For Sanskriti 💗',
+  description: 'Special wish to my best friend.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
